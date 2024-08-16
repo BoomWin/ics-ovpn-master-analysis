@@ -74,6 +74,7 @@ public class OpenVPNThread implements Runnable {
         try {
             Log.i(TAG, "Starting openvpn");
             // OpenVPN 프로세스 시작 부분.
+            // argv = /data/data/your.package.name/cache/c_minipievpn.arm64-v8a --config stdin 이러한 형태로 값이 전달 되는 거 아님?
             startOpenVPNThreadArgs(mArgv);
             Log.i(TAG, "OpenVPN process exited");
         } catch (Exception e) {
@@ -124,11 +125,16 @@ public class OpenVPNThread implements Runnable {
     private void startOpenVPNThreadArgs(String[] argv) {
         LinkedList<String> argvlist = new LinkedList<String>();
 
+        // argv = /data/data/your.package.name/cache/c_minipievpn.arm64-v8a --config stdin
+        // 배열의 모든 요소를 리스트에 추가
         Collections.addAll(argvlist, argv);
 
+        //argvlist = /data/data/your.package.name/cache/c_minipievpn.arm64-v8a --config stdin
+        // processBuilder 는 자바에서 새로운 프로세스를 생성하고, 해당 프로세스의 실행을 설정하는데 사용됨.
         ProcessBuilder pb = new ProcessBuilder(argvlist);
         // Hack O rama
 
+        // genLibarryPath 부터 ㄱ
         String lbpath = genLibraryPath(argv, pb);
 
         pb.environment().put("LD_LIBRARY_PATH", lbpath);

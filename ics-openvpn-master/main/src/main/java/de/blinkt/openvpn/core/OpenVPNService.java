@@ -695,6 +695,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         String[] argv = VPNLaunchHelper.buildOpenvpnArgv(this);
 
         // 결국여기는
+        // argv = /data/data/your.package.name/cache/c_minipievpn.arm64-v8a --config stdin 이러한 형태로 값이 전달 되는 거 아님?
         // ex) /data/data/your.package.name/cache/c_minipievpn.arm64-v8a --config stdin 이러한 형태로 값이 전달 되는 거 아님?
 
         // Set a flag that we are starting a new VPN
@@ -739,6 +740,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
             mManagement = mOpenVPN3;
         } else {
             processThread = new OpenVPNThread(this, argv, nativeLibraryDirectory, tmpDir);
+            // argv = /data/data/your.package.name/cache/c_minipievpn.arm64-v8a --config stdin
         }
 
         // 프로세스 스레드 시작.
