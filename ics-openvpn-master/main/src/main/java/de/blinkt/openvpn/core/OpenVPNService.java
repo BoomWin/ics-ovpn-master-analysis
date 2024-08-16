@@ -751,6 +751,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         // OpenVPN3 미사용 시 설정 파일 작성 하는 이유가뭐지..?
         if (!useOpenVPN3) {
             try {
+                // 여기서 구성 파일의 내용을 생성함. 실제 파일이나 스트림에 쓰여짐.
                 mProfile.writeConfigFileOutput(this, ((OpenVPNThread) processThread).getOpenVPNStdin());
             } catch (IOException | ExecutionException | InterruptedException e) {
                 VpnStatus.logException("Error generating config file", e);

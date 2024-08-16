@@ -73,6 +73,7 @@ public class OpenVPNThread implements Runnable {
     public void run() {
         try {
             Log.i(TAG, "Starting openvpn");
+            // OpenVPN 프로세스 시작 부분.
             startOpenVPNThreadArgs(mArgv);
             Log.i(TAG, "OpenVPN process exited");
         } catch (Exception e) {

@@ -367,7 +367,9 @@ public class VpnProfile implements Serializable, Cloneable {
 
     public String getConfigFile(Context context, boolean configForOvpn3) {
 
+        // 애플리케이션의 캐시 디렉토리 경로를 지정해줌.
         File cacheDir = context.getCacheDir();
+        // StirngBuilder 는 + 연산으로 리소스를 낭비하지않고 .append 를 사용해서 문자열 만들어줌.
         StringBuilder cfg = new StringBuilder();
 
         if (!configForOvpn3) {
@@ -376,6 +378,8 @@ public class VpnProfile implements Serializable, Cloneable {
             cfg.append("# Enables connection to GUI\n");
             cfg.append("management ");
 
+            // 패키지에 따라서 이름이 달라짐,
+            // /data/data/[패키지명]/cache/mgmtsocket 이라는 절대경로가 추가 될 것으로 보임.
             cfg.append(cacheDir.getAbsolutePath()).append("/").append("mgmtsocket");
             cfg.append(" unix\n");
             cfg.append("management-client\n");
@@ -388,6 +392,7 @@ public class VpnProfile implements Serializable, Cloneable {
             cfg.append("setenv IV_SSO openurl,webauth,crtext\n");
             String versionString = getPlatformVersionEnvString();
             cfg.append(String.format("setenv IV_PLAT_VER %s\n", openVpnEscape(versionString)));
+            // 가짜 맥주소를 저장함.
             String hwaddr = NetworkUtils.getFakeMacAddrFromSAAID(context);
             if (hwaddr != null)
                 cfg.append(String.format("setenv IV_HWADDR %s\n", hwaddr));
@@ -397,7 +402,7 @@ public class VpnProfile implements Serializable, Cloneable {
 
             if (!TextUtils.isEmpty(mTlSCertProfile) && mAuthenticationType != TYPE_STATICKEYS)
                 cfg.append(String.format("tls-cert-profile %s\n", mTlSCertProfile));
-        } else {
+        } else { // 아니면 OpenVPN3 에 대한 파일 구성.
             cfg.append("# Config for OpenVPN 3 C++\n");
         }
 
@@ -412,7 +417,7 @@ public class VpnProfile implements Serializable, Cloneable {
         }
 
         boolean useTLSClient = (mAuthenticationType != TYPE_STATICKEYS);
-
+        // OpenVPN 의 'pull' 옵션과 관련이 있음.
         if (useTLSClient && mUsePull)
             cfg.append("client\n");
         else if (mUsePull)
@@ -459,10 +464,11 @@ public class VpnProfile implements Serializable, Cloneable {
             for (Connection conn : mConnections) {
                 canUsePlainRemotes = canUsePlainRemotes && conn.isOnlyRemote();
             }
-
+            // 무작위 서버 선택이 뭘까 ?>
             if (mRemoteRandom)
                 cfg.append("remote-random\n");
 
+            // 단순 원격은 뭐지?
             if (canUsePlainRemotes) {
                 for (Connection conn : mConnections) {
                     if (conn.mEnabled) {
@@ -757,6 +763,7 @@ public class VpnProfile implements Serializable, Cloneable {
     }
 
     public String getPlatformVersionEnvString() {
+        // 현재 US 로 설정 되어 있음,
         return String.format(Locale.US, "%d %s %s %s %s %s", Build.VERSION.SDK_INT, Build.VERSION.RELEASE,
                 NativeUtils.getNativeAPI(), Build.BRAND, Build.BOARD, Build.MODEL);
     }
