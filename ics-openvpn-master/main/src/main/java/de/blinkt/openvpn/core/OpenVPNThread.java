@@ -132,14 +132,24 @@ public class OpenVPNThread implements Runnable {
         //argvlist = /data/data/your.package.name/cache/c_minipievpn.arm64-v8a --config stdin
         // processBuilder 는 자바에서 새로운 프로세스를 생성하고, 해당 프로세스의 실행을 설정하는데 사용됨.
         ProcessBuilder pb = new ProcessBuilder(argvlist);
+        // 위와 같은 객체를 생성하게 되면
+        // 원래는
+        // ProcessBuilder pb = new ProcessBuilder("echo", "hello");
+        // 이런식으로 "echo"가 명령어이고, "Hello,World!"는 그 명령어에 대한 인수가 된다.
+
         // Hack O rama
 
-        // genLibarryPath 부터 ㄱ
+        // 최종적으로 구성된 라이브러리 검색 경로를 반환받았음.
         String lbpath = genLibraryPath(argv, pb);
+
 
         pb.environment().put("LD_LIBRARY_PATH", lbpath);
         pb.environment().put("TMPDIR", mTmpDir);
 
+        // 프로세스의 표준 에러 스트림을 표준 출력 스트림으로 리디렉션함.
+        // 기본적으로 프로세스는 두 개의 별도 출력 스트림(stdout 과 stderr)을 갖음.
+        // 이 설정을 true로 하면, 두 스트림이 하나로 병합됨.
+        // 프로세스의 모든 출력을 단일 스트림에서 읽을 수 있게함.
         pb.redirectErrorStream(true);
         try {
             mProcess = pb.start();
@@ -149,10 +159,15 @@ public class OpenVPNThread implements Runnable {
             OutputStream out = mProcess.getOutputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 
+            // 출력 스트림을 클래스 변수에 저장함.
             mOutputStream = out;
+            // mStreaFuture 태스크를 실행함.
+            // mStreamFuture.run()이 호출되면, FutureTask 는 내부적으로 결과(여기서는 mOutputStream)를 저장하고, 작업이 완료되었음을 표시함.
             mStreamFuture.run();
 
+            // 무한 루프를 시작하여 지속적으로 OpenVPN 의 출력을 처리함.
             while (true) {
+                // OpenVPN 프로세스의 출력에서 한 줄을 읽음.
                 String logline = br.readLine();
                 if (logline == null)
                     return;
@@ -201,9 +216,14 @@ public class OpenVPNThread implements Runnable {
 
     private String genLibraryPath(String[] argv, ProcessBuilder pb) {
         // Hack until I find a good way to get the real library path
+        // 그러면 여기서 기존에 있던 경로 cache가 lib으로 바뀌고 applibpath에 저장됨.
         String applibpath = argv[0].replaceFirst("/cache/.*$", "/lib");
 
+
+        // 현재 설정된 라이브러리 경로를 가져옴.
         String lbpath = pb.environment().get("LD_LIBRARY_PATH");
+
+        // 기존 경로가 없으며 applibpath를 사용하고, 있으면 applibpath를 앞에 추가함.
         if (lbpath == null)
             lbpath = applibpath;
         else
@@ -212,6 +232,7 @@ public class OpenVPNThread implements Runnable {
         if (!applibpath.equals(mNativeDir)) {
             lbpath = mNativeDir + ":" + lbpath;
         }
+        // 최종적으로 구성된 라이브러리 검색 경로를 반환함.
         return lbpath;
     }
 

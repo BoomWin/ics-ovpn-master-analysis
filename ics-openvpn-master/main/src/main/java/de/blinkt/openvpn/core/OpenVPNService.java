@@ -750,7 +750,6 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         }
 
         // OpenVPN3 미사용 시 설정 파일 작성
-        // OpenVPN3 미사용 시 설정 파일 작성 하는 이유가뭐지..?
         if (!useOpenVPN3) {
             try {
                 // 여기서 구성 파일의 내용을 생성함. 실제 파일이나 스트림에 쓰여짐.
@@ -763,7 +762,6 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         }
 
         // 디바이스 상태 수신기 설정.
-        // UI 스레드에서 실행되도록 guiHandler를 통해서 포스팅.
         final DeviceStateReceiver oldDeviceStateReceiver = mDeviceStateReceiver;
         final DeviceStateReceiver newDeviceStateReceiver = new DeviceStateReceiver(mManagement);
 
