@@ -722,6 +722,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
                 Thread mSocketManagerThread = new Thread(ovpnManagementThread, "OpenVPNManagementThread");
                 mSocketManagerThread.start();
                 // 현재 관리 스레드를 mManagement에 할당. 이 부분에 대해서 mMangemanet가 왜 저렇게 정의되어있는지 잘 이해가안됨.
+                // 나중에 DeviceStateReceiver를 위한 동작으로 보임.
                 mManagement = ovpnManagementThread;
                 VpnStatus.logInfo("started Socket Thread");
             } else {

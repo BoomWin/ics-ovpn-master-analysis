@@ -60,6 +60,7 @@ public class OpenVPNThread implements Runnable {
         mStreamFuture = new FutureTask<>(() -> mOutputStream);
     }
 
+
     public void stopProcess() {
         mProcess.destroy();
     }
@@ -127,10 +128,12 @@ public class OpenVPNThread implements Runnable {
 
         // argv = /data/data/your.package.name/cache/c_minipievpn.arm64-v8a --config stdin
         // 배열의 모든 요소를 리스트에 추가
+
         Collections.addAll(argvlist, argv);
 
         //argvlist = /data/data/your.package.name/cache/c_minipievpn.arm64-v8a --config stdin
         // processBuilder 는 자바에서 새로운 프로세스를 생성하고, 해당 프로세스의 실행을 설정하는데 사용됨.
+        // ProcessBuilder (List<String> command) : 실행할 명령과 그 인자들을 리스트 형태로 받음.
         ProcessBuilder pb = new ProcessBuilder(argvlist);
         // 위와 같은 객체를 생성하게 되면
         // 원래는
