@@ -137,6 +137,7 @@ public class VpnStatus {
 
     public synchronized static void setConnectedVPNProfile(String uuid) {
         mLastConnectedVPNUUID = uuid;
+        // 어떤 식으로 저장되는지 그림으로 보면서 확인해야 할듯
         for (StateListener sl: stateListener)
             sl.setConnectedVPN(uuid);
     }

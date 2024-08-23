@@ -508,11 +508,14 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
             return false;
     }
 
+    // 여기서 받는 flags 랑 startId 는 To Do list로 가져가고,
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // getBooleanExtra 가 뭔지 조사해야하고,
         if (intent != null && intent.getBooleanExtra(ALWAYS_SHOW_NOTIFICATION, false))
             mNotificationAlwaysVisible = true;
 
+        // 여기서 참조하는 this에 의미에대한 지식이 부족해서 이해가안됨..
         VpnStatus.addStateListener(this);
         VpnStatus.addByteCountListener(this);
 
@@ -549,7 +552,10 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
         /* start the OpenVPN process itself in a background thread */
         // OpenVPN 시작. startOpenVPN 메소드를 백그라운드 스레드에서 실행함.
-        // mCoomandHandler 가 쓰레드니깐 .
+
+        // mCommandHandler가 관리하는 스레드에서 실행되도록 함.
+        // 백그라운드 스레드라는 뜻
+        // ui 표시에 방해가 되지않도록 핸들러를 사용해 백그라운드 쓰레드에서 작업을 처리함.
         mCommandHandler.post(() -> startOpenVPN(intent, startId));
 
         return START_STICKY;
@@ -579,22 +585,33 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
     {
         VpnProfile vpnProfile = null;
         String startReason;
+        // intent.hasExtra(String name)은 특정한 키(name)가 포함되어 있는지 확인하는 데 사용됨.
+        // 리턴 값 : 포함되어 있으면 true, 없으면 false를 반환함.
         if (intent != null && intent.hasExtra(EXTRA_PROFILEUUID)) {
+            // intent.getExtra(String name)는 Intent에 포함된 extra 중에서 지정된 이름을 가진 String 값을 반환하는 메서드임.
+            // String 이면 String
+            // int 면 int 를 붙여서 사용하면됨.
             String profileUUID = intent.getStringExtra(EXTRA_PROFILEUUID);
+            // 여기서 뒤에 , 0은 없으면 defaultValue 값으로 0을 반환 하겠다는 의미임.
             int profileVersion = intent.getIntExtra(EXTRA_PROFILE_VERSION, 0);
             startReason = intent.getStringExtra(EXTRA_START_REASON);
             if (startReason == null)
                 startReason = "(unknown)";
 
             // Try for 10s to get current version of the profile
+            // 아까는 외부로 보낼 때 축약해서 보낸 데이터를 이번에는 다가져오는 거구나 ?
             vpnProfile = ProfileManager.get(this, profileUUID, profileVersion, 100);
 
+
+            // TO DO LIST 가져가고.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
                 updateShortCutUsage(vpnProfile);
             }
 
-        } else {
+        } else { // intent에 PROFILE_UUID 가 존재하지 않거나 그냥 intent 자체가 null일 때
             /* The intent is null when we are set as always-on or the service has been restarted. */
+
+            // 마지막에 연결되었던 vpn 파일 가져와서 할당해주는 것 이 로직은 서비스가 다시 시작 했을때 시작 되는 내용으로 파악.
             vpnProfile = ProfileManager.getLastConnectedProfile(this);
             startReason = "Using last connected profile (started with null intent, always-on or restart after crash)";
             VpnStatus.logInfo(R.string.service_restarted);
@@ -611,6 +628,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
                     return null;
                 }
             }
+            // TO DO LIST
             /* Do the asynchronous keychain certificate stuff */
             vpnProfile.checkForRestart(this);
         }
@@ -662,13 +680,14 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
         // 실행중인 VPN을 교체하지 말라는 요청이 있는지 확인하는 것임. 있을 시 true.
         boolean noReplaceRequested =  (intent != null) && intent.getBooleanExtra(EXTRA_DO_NOT_REPLACE_RUNNING_VPN, false);
-
+        // true
 
         /* we get an empty start request or explicitly get told to not replace the VPN then ignore
          * a start request. This avoids OnBootreciver, Always and user quickly clicking to have
          * weird race conditions
          */
-        // 이미 동일한 프로필로 VPN이 실행중이고, 교체 요청이 없으면 시작요청을 무시.
+
+
         if (mProfile != null && mProfile == vp && (intent == null || noReplaceRequested))
         {
             /* we do not want to replace the running VPN */
@@ -680,9 +699,11 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         // 여기서 사용되는 this가 ? 계속 this가 헷갈림.
         ProfileManager.setConnectedVpnProfile(this, vp);
         VpnStatus.setConnectedVPNProfile(vp.getUUIDString());
+        // 이 부분 TO DO LSIT로 가져가고,
         keepVPNAlive.scheduleKeepVPNAliveJobService(this, vp);
 
         String nativeLibraryDirectory = getApplicationInfo().nativeLibraryDir;
+
         String tmpDir;
         try {
             tmpDir = getApplication().getCacheDir().getCanonicalPath();
@@ -695,6 +716,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         String[] argv = VPNLaunchHelper.buildOpenvpnArgv(this);
 
         // 결국여기는
+        // 근데 어떤식으로 저장되는지는 이따가 체크 한 번해야할듯
         // argv = /data/data/your.package.name/cache/c_minipievpn.arm64-v8a --config stdin 이러한 형태로 값이 전달 되는 거 아님?
         // ex) /data/data/your.package.name/cache/c_minipievpn.arm64-v8a --config stdin 이러한 형태로 값이 전달 되는 거 아님?
 
@@ -829,6 +851,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         // 별도의 HandlerThread를 만들어 백그라운드에서 작업을 처리할 수 있음.
         super.onCreate();
         guiHandler = new Handler(getMainLooper());
+        // 백그라운드 스레드 작업
         mCommandHandlerThread = new HandlerThread("OpenVPNServiceCommandThread");
         mCommandHandlerThread.start();
         mCommandHandler = new Handler(mCommandHandlerThread.getLooper());

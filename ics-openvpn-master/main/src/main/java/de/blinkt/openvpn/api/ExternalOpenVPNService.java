@@ -119,6 +119,8 @@ public class ExternalOpenVPNService extends Service implements StateListener {
 
             List<APIVpnProfile> profiles = new LinkedList<>();
 
+            // vpnProfile 에서 APIVpnprofile로의 변환.
+            // 원본 VpnProfile 객체의 모든 정보가 아닌, 선택된 일부 정보만 새 APIVpnProfile 객체에 포함됨.
             for (VpnProfile vp : pm.getProfiles()) {
                 if (!vp.profileDeleted)
                     profiles.add(new APIVpnProfile(vp.getUUIDString(), vp.mName, vp.mUserEditable, vp.mProfileCreator));
@@ -139,6 +141,7 @@ public class ExternalOpenVPNService extends Service implements StateListener {
             int neddPassword = vp.needUserPWInput(null, null);
             String startReason = "external OpenVPN service by uid: " + Binder.getCallingUid();
 
+            // 이 부분은 needPassword 와 연관이 있어서 일단 패스.
             if(vpnPermissionIntent != null || neddPassword != 0){
                 Intent shortVPNIntent = new Intent(Intent.ACTION_MAIN);
                 shortVPNIntent.setClass(getBaseContext(), de.blinkt.openvpn.LaunchVPN.class);
@@ -158,7 +161,7 @@ public class ExternalOpenVPNService extends Service implements StateListener {
             mExtAppDb.checkOpenVPNPermission(getPackageManager());
 
             VpnProfile vp = ProfileManager.get(getBaseContext(), profileUUID);
-            // 결국 이 코드는 오류대상을 싹다 가져와서 오류가 없음을 체크하는 동작임.
+
             if (vp.checkProfile(getApplicationContext()) != R.string.no_error_found)
                 throw new RemoteException(getString(vp.checkProfile(getApplicationContext())));
 

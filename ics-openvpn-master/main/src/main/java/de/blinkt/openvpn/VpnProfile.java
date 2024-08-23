@@ -307,8 +307,8 @@ public class VpnProfile implements Serializable, Cloneable {
     }
 
     public void upgradeProfile() {
-
-        /* Fallthrough is intended here */
+//
+//        /* Fallthrough is intended here */
         switch (mProfileVersion) {
             case 0:
             case 1:

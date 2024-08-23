@@ -57,6 +57,7 @@ public class OpenVPNThread implements Runnable {
         mNativeDir = nativelibdir;
         mTmpDir = tmpdir;
         mService = service;
+        // 이 기능이 헷갈리는거임.
         mStreamFuture = new FutureTask<>(() -> mOutputStream);
     }
 

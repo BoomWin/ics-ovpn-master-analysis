@@ -103,7 +103,11 @@ public class VPNLaunchHelper {
 
     public static void startOpenVpn(VpnProfile startprofile, Context context, String startReason, boolean replace_running_vpn) {
         Intent startVPN = startprofile.getStartServiceIntent(context, startReason, replace_running_vpn);
+        // 여기서 null일때에 대한 처리가 없는데 만약 startVPN에 intent가 널이라면? 어떤 처리를 해야할지 ?
         if (startVPN != null) {
+            // 이거는 안드로이드에서 권장하는 버전에 따른 동작에 대한 구성을 나타낸것임.
+            // 여기서는 해당 서비스의 OnstartCommand로 작동을 한다.
+            // 즉 oepnvpnservice.class의 OnstartCommand로 이동.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 //noinspection NewApi
                 context.startForegroundService(startVPN);

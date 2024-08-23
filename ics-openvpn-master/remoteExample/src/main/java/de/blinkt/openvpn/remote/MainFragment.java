@@ -213,6 +213,7 @@ public class MainFragment extends Fragment implements View.OnClickListener, Hand
 
             if(list.size()> 0) {
                 Button b= mStartVpn;
+                // 여기서 자동으로 startVPN 메서드 처리하겠네.
                 b.setOnClickListener(this);
                 b.setVisibility(View.VISIBLE);
                 b.setText(list.get(0).mName);

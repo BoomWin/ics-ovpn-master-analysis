@@ -224,6 +224,7 @@ public class ProfileManager {
             saveProfile(c, profile);
     }
 
+    // VpnProfile 의 key값인 uuid 값을 가져오는게 아니라 profile.values를 함으로써 vpnProifle의 객체값들만 긁어옴.
     public Collection<VpnProfile> getProfiles() {
         return profiles.values();
     }

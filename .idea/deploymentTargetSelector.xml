@@ -2,13 +2,7 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="ics-openvpn-master.main">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="ics-openvpn-master.tlsexternalcertprovider">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="ics-openvpn-master.remoteExample">
+      <SelectionState runConfigName="main">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
