@@ -270,8 +270,10 @@ public class VpnStatus {
 
 
     public synchronized static void addStateListener(StateListener sl) {
+        // stateListener에 포함되어 있지 않으면 추가하는
         if (!stateListener.contains(sl)) {
             stateListener.add(sl);
+
             if (mLaststate != null)
                 sl.updateState(mLaststate, mLaststatemsg, mLastStateresid, mLastLevel, mLastIntent);
         }
