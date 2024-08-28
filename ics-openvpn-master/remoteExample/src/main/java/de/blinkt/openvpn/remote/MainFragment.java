@@ -169,6 +169,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Hand
 
             try {
                 // Request permission to use the API
+                // preferences 파일에 이 패키지가 추가되어 있ㅇ다면 null 값을 반환함. null 일때 허용된거임.
+                // null이 아니면 grantpermission 클래스로 이동해서 허용되는 과정을 거쳐야하고, 아니면 바로 onActivity 호줄.
                 Intent i = mService.prepare(getActivity().getPackageName());
                 if (i!=null) {
                     startActivityForResult(i, ICS_OPENVPN_PERMISSION);
@@ -204,7 +206,9 @@ public class MainFragment extends Fragment implements View.OnClickListener, Hand
         try {
             List<APIVpnProfile> list = mService.getProfiles();
             String all="List:";
+            // 5개만 뽑아옴.
             for(APIVpnProfile vp:list.subList(0, Math.min(5, list.size()))) {
+                // List : v
                 all = all + vp.mName + ":" + vp.mUUID + "\n";
             }
 
@@ -214,6 +218,8 @@ public class MainFragment extends Fragment implements View.OnClickListener, Hand
             if(list.size()> 0) {
                 Button b= mStartVpn;
                 // 여기서 자동으로 startVPN 메서드 처리하겠네.
+                // 놉, 여기서 버튼이 활성화가 되어서 .vp 파일이 존재할 때만
+                // 이 버튼 활성화가 되기 때문에 startVPN을 사용할 수 있는거지.
                 b.setOnClickListener(this);
                 b.setVisibility(View.VISIBLE);
                 b.setText(list.get(0).mName);

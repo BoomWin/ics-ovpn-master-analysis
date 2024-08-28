@@ -389,6 +389,7 @@ public class ExternalOpenVPNService extends Service implements StateListener {
         public void handleMessage(Message msg) {
 
             RemoteCallbackList<IOpenVPNStatusCallback> callbacks;
+
             switch (msg.what) {
                 case SEND_TOALL:
                     if (service == null || service.get() == null)
@@ -398,6 +399,8 @@ public class ExternalOpenVPNService extends Service implements StateListener {
 
 
                     // Broadcast to all clients the new value.
+                    // 이 부분도?? 뭘까 ?
+                    // 브로드 캐스트를 시작하기 위해 콜백등록되어 있는 클라이언트의 개수를 반환함.
                     final int N = callbacks.beginBroadcast();
                     for (int i = 0; i < N; i++) {
                         try {

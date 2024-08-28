@@ -186,6 +186,8 @@ public class ProfileManager {
 
     public static VpnProfile get(Context context, String profileUUID, int version, int tries) {
         checkInstance(context);
+        // profile 객체 전부를 얻어내는거구나
+
         VpnProfile profile = get(profileUUID);
         int tried = 0;
         while ((profile == null || profile.mVersion < version) && (tried++ < tries)) {
