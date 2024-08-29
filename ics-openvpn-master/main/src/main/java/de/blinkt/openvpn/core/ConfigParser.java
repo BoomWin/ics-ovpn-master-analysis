@@ -191,6 +191,8 @@ public class ConfigParser {
 
                 checkinlinefile(args, br);
 
+
+                // 여기 까지 분석 했음.
                 String optionname = args.get(0);
                 if (optionAliases.get(optionname) != null)
                     optionname = optionAliases.get(optionname);
@@ -279,19 +281,32 @@ public class ConfigParser {
             else
                 in = '\0';
 
+            // true && 백슬래시 (false)  && 상태가 readin_single_quote 가 아니라면 (true) 스킵
+            // 백슬래시가 있을 때 backslash = true 라고 처리를 하는 걸로 보인다.
             if (!backslash && in == '\\' && state != linestate.readin_single_quote) {
                 backslash = true;
+                // 백슬래시가 없을 때
             } else {
+                // 초기에는 initial 이니깐 if 문 진입.
                 if (state == linestate.initial) {
+                    // 공백이 아닐 때 진입.
                     if (!space(in)) {
+                        // ; 이거나 #으로 끝나면 반복문 탈출.
                         if (in == ';' || in == '#') /* comment */
                             break;
+                        // backslash가 false 이면서 \" 일 때
                         if (!backslash && in == '\"')
+                            // 상태 reading_quoted 로 변경
                             state = linestate.reading_quoted;
+                        // backslash가 flase 이면서 \' 일 때
                         else if (!backslash && in == '\'')
+                            // 상태 readin_single_quote로 변경
                             state = linestate.readin_single_quote;
+                        // 그 밖에
                         else {
+                            // 내 보내는 역할을 하는 out 에 테스트 통과한 in 할당.
                             out = in;
+                            // 상태 reading_unquoted로 변경
                             state = linestate.reading_unquoted;
                         }
                     }
